@@ -1,0 +1,871 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Bootstrap Next.js 15 stack & tooling",
+        "description": "Initialize the Next.js App Router project with mandated tooling, linting, and local Docker services so the repo matches the PRD baseline while running on the already-installed Next.js 16.0.1 + React/React DOM 19.2.0 stack (see `app/package.json`) and TypeScript 5.6.x, with guidance on keeping this React 19 baseline stable.",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "details": "- Generate and refine the Next.js 16.0.1 project (TypeScript 5.6.x, React/React DOM 19.2.0 per `app/package.json`) with Tailwind CSS 4.0, shadcn/ui, TanStack Query 5.84.x, tRPC 11, ESLint/Prettier, Vitest, Playwright, and Husky, documenting how the React 19 runtime is now the supported default.\n- Configure the `app/` directory (auth, dashboard, `/api/trpc/[trpc]/route.ts`, `/api/notifications/stream/route.ts`) so providers/layout scaffolding in `app/app/layout.tsx` reflects React 19.2.0 behavior and is ready for future upgrades.\n- Add Docker Compose services for Postgres16, Redis7, LocalStack, and the Next dev server plus `.env.example` vars; install AWS SDK v3, Prisma 5.x latest, Amplify, Vercel AI SDK, OpenAI client, date-fns, and sonner in the App Router workspace.\n- Document in `app/README.md` (or equivalent) that React 19.2.0/Next 16.0.1 are the supported runtime versions, with any caveats for dependency compatibility going forward.",
+        "testStrategy": "- Run `npm run lint` and `npm run typecheck` inside `app/` to confirm the React 19.2.0 / TypeScript 5.6.x baseline compiles.\n- Execute `npm run test:unit` (Vitest placeholder) and `npm run test:e2e -- --list` to verify testing harnesses are wired against React 19.\n- Validate Docker services via `docker compose ps` and confirm the Next 16 dev server boots without runtime errors under React 19.2.0.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scaffold Next.js 15.1.8 TypeScript app",
+            "description": "Create the base Next.js 15.1.8 project with TypeScript in the empty repo.",
+            "dependencies": [],
+            "details": "Run the official Next.js bootstrap targeting version 16.0.1 with TypeScript 5.6.x and React/React DOM 19.2.0 enabled so `app/package.json` and the initial structure reflect the mandated stack.",
+            "status": "done",
+            "testStrategy": "npm run lint after bootstrap",
+            "updatedAt": "2025-11-07T23:12:36.105Z",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Install core styling and UI libraries",
+            "description": "Integrate Tailwind CSS 4, shadcn/ui, and base theme configuration.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add Tailwind 4 configs, PostCSS setup, shadcn/ui initialization, extend global styles, and confirm the theme provider scaffold matches PRD expectations while remaining compatible with the React 19.2.0 runtime in `app/app/layout.tsx`.",
+            "status": "done",
+            "testStrategy": "Run Tailwind build or npm run dev to ensure CSS compiles",
+            "parentId": "undefined",
+            "updatedAt": "2025-11-07T23:12:36.886Z"
+          },
+          {
+            "id": 3,
+            "title": "Add data and network tooling packages",
+            "description": "Install TanStack Query, tRPC, Amplify, Prisma, AWS SDK, Vercel AI, OpenAI, date-fns, sonner, and related deps.",
+            "dependencies": [
+              1
+            ],
+            "details": "Update `app/package.json` with the mandated libraries using TanStack Query 5.84.x, Prisma 5.x latest, and React 19-compatible versions; set up Prisma config files and ensure a TanStack Query provider placeholder exists for later wiring.",
+            "status": "done",
+            "testStrategy": "npm install logs checked; npm run typecheck ensures deps recognized",
+            "parentId": "undefined",
+            "updatedAt": "2025-11-07T23:24:09.358Z"
+          },
+          {
+            "id": 4,
+            "title": "Configure app router structure & API routes",
+            "description": "Create auth/dashboard segments and API handlers `/api/trpc/[trpc]/route.ts` plus `/api/notifications/stream/route.ts`.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Add folder hierarchy under `app/app`, stub route handlers with placeholders, ensure layout files exist matching PRD and reference providers to be wired later, and note that components should target React 19.2.0 behavior today.",
+            "status": "done",
+            "testStrategy": "npm run lint to ensure routes compile",
+            "parentId": "undefined",
+            "updatedAt": "2025-11-07T23:28:46.042Z"
+          },
+          {
+            "id": 5,
+            "title": "Set up linting, formatting, and testing tools",
+            "description": "Configure ESLint, Prettier, Vitest, Playwright, and Husky hooks.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add config files, npm scripts, sample test stubs, and Husky git hooks for lint/test on commit per PRD baseline expectations, confirming lint/format rules align with the React 19.2.0 + TypeScript 5.6.x stack.",
+            "status": "done",
+            "testStrategy": "npm run lint, npm run test:unit, npm run test:e2e -- --list",
+            "parentId": "undefined",
+            "updatedAt": "2025-11-07T23:34:28.819Z"
+          },
+          {
+            "id": 6,
+            "title": "Provision Docker Compose services & env templates",
+            "description": "Define Postgres16, Redis7, LocalStack, and Next dev server in docker-compose with `.env.example` wiring.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Create docker-compose.yml describing each service, ensure volumes/ports match requirements, document env vars and update `.env.example` with needed keys referenced by services.",
+            "status": "done",
+            "testStrategy": "docker compose config to validate file",
+            "parentId": "undefined",
+            "updatedAt": "2025-11-07T23:36:36.130Z"
+          },
+          {
+            "id": 7,
+            "title": "Implement global providers, SSE hook, and docs",
+            "description": "Wire QueryClient, Amplify, shadcn Theme providers in layout plus add SSE hook placeholder and verification docs.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Update `app/app/layout.tsx` to wrap children with the required providers compatible with React 19.2.0, scaffold an SSE client hook file, and document commands for lint/typecheck/tests and Docker verification including the React 19 runtime note in `app/README.md`.",
+            "status": "done",
+            "testStrategy": "npm run dev smoke plus verify docs list commands",
+            "parentId": "undefined",
+            "updatedAt": "2025-11-07T23:38:25.965Z"
+          }
+        ],
+        "complexity": 8,
+        "recommendedSubtasks": 7,
+        "expansionPrompt": "Break this bootstrap into concrete steps: initialize the Next.js 15.1.8 + TS app in this otherwise empty repo, install/configure Tailwind 4, shadcn/ui, TanStack Query, tRPC, Amplify, Prisma, AWS/Vercel/OpenAI SDKs, set up ESLint/Prettier/Vitest/Playwright/Husky, scaffold the mandated App Router segments and API routes (including /api/trpc and /api/notifications/stream), add Docker Compose services plus .env.example wiring, implement base providers/layout + SSE hook placeholder, and document the verification commands.",
+        "updatedAt": "2025-11-07T23:38:25.965Z"
+      },
+      {
+        "id": "2",
+        "title": "Model database schema & Prisma layer",
+        "description": "Design the Prisma 5.x schema for Users, Bookings, WeatherChecks, RescheduleLogs, Notifications (plus weather minima) with full relations/enums, then run migrations/seed data while ensuring every artifact stays on the validated Prisma 5.x latest track rather than the unconfirmed 6.x line.",
+        "status": "pending",
+        "dependencies": [
+          "1"
+        ],
+        "priority": "high",
+        "details": "- Translate PRD fields into Prisma models with enums for roles, booking status, notification types, and weather status, noting in `package.json` that both `prisma` and `@prisma/client` must be pinned to the latest 5.x release (Context7-approved) so no 6.x-only features slip in.\n- Configure `prisma/schema.prisma` for PostgreSQL, enable pg extensions (uuid, citext) via the migration SQL, and document any datasource previewFeatures to ensure they are supported by Prisma 5.x.\n- Implement the weather minimums lookup (JSON column or dedicated model) tied to training level inside the Prisma schema, keeping the structure compatible with the Prisma 5.x query engine.\n- Generate migrations with `npx prisma migrate dev --schema prisma/schema.prisma`, confirming the emitted SQL in `prisma/migrations/*` enables the required extensions and reflects the 5.x-compatible schema.\n- Seed representative users/instructors/bookings/weather minima using `prisma/seed.ts`, invoking the Prisma 5.x client so downstream features (tasks 5, 8, 9) can rely on stable APIs.\n- Expose a reusable Prisma client helper (e.g., `src/server/db/prisma.ts`) that handles Data Proxy/dev pooling scenarios without relying on Prisma 6.x wrappers, and surface it to Next.js API routes or future Lambdas.",
+        "testStrategy": "- Run `npx prisma -v` and `npm ls prisma @prisma/client` to verify both packages resolve to the latest Prisma 5.x release before validating the schema.\n- Execute `npx prisma validate`, `npx prisma studio`, and `npx prisma migrate status` to ensure the 5.x schema/migrations are coherent.\n- Run `npx prisma db seed` (wired in package scripts) and perform a quick sanity query via a temporary script or `npx ts-node prisma/seed-check.ts` to confirm the Prisma 5.x client reads back seeded records.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Extract PRD entities and enum requirements",
+            "description": "Review the PRD and existing docs to list all fields, relationships, and enum values needed for Users, Bookings, WeatherChecks, RescheduleLogs, Notifications, and weather minimums.",
+            "dependencies": [],
+            "details": "Gather every attribute, relation cardinality, and enum option from the PRD so the Prisma models will be complete and aligned with business rules before touching schema files.",
+            "status": "pending",
+            "testStrategy": "Peer review the requirements checklist or run a diff against PRD tables.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Design Prisma models, enums, and weather minima structure",
+            "description": "Translate the gathered requirements into Prisma model definitions with proper relations, enum types, and a weather minima lookup tied to training level.",
+            "dependencies": [
+              1
+            ],
+            "details": "Author the full `prisma/schema.prisma` entities, relation fields, indexes, and optional JSON/lookup model for weather minima ensuring PG extensions (uuid/citext) are configured in the datasource block, and confirm no Prisma 6.x-only features (e.g., `@@define` macros) are introduced so the file stays valid under Prisma 5.x latest.",
+            "status": "pending",
+            "testStrategy": "Run `npx prisma validate` to ensure the schema is syntactically correct under Prisma 5.x.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Generate migrations and configure PostgreSQL extensions",
+            "description": "Create the initial Prisma migration that sets up all tables, enums, and required PostgreSQL extensions, then apply it to the development database.",
+            "dependencies": [
+              2
+            ],
+            "details": "Use `npx prisma migrate dev` (with shadow DB if needed) so the SQL in `prisma/migrations/*/migration.sql` enables uuid/citext, creates the models, and documents the dependency on Prisma 5.x in the migration README or commit message for traceability.",
+            "status": "pending",
+            "testStrategy": "Inspect the generated SQL and run `npx prisma migrate status` to confirm the migration is applied while Prisma CLI reports a 5.x version.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Implement comprehensive seed script",
+            "description": "Write and wire up a Prisma seed script that inserts representative users, instructors, bookings, weather checks, reschedule logs, and notifications plus weather minima records.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create `prisma/seed.ts` (or similar) populating sample data covering multiple roles/status combos, import the Prisma 5.x client from `@prisma/client`, and ensure it runs via `npx prisma db seed`.",
+            "status": "pending",
+            "testStrategy": "Execute `npx prisma db seed` and query via Prisma or psql to verify inserted records.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Expose reusable Prisma client helper with tests",
+            "description": "Create a shared Prisma client wrapper supporting Next.js API routes and future Lambdas (Data Proxy/dev pooler) plus validation tests or zod mappings as required.",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement a singleton/client factory module (e.g., `src/server/db/prisma.ts`) that instantiates the Prisma 5.x client with connection pooling safeguards, add any zod schema helpers, and cover them with unit tests (e.g., Vitest) ensuring type-safe access patterns.",
+            "status": "pending",
+            "testStrategy": "Run `npx prisma validate` and project test suite (e.g., `pnpm test` or targeted Vitest) to confirm helper correctness.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 7,
+        "recommendedSubtasks": 5,
+        "expansionPrompt": "Outline subtasks to create prisma/schema.prisma with the PRD models/enums, configure PostgreSQL datasource + extensions, generate and apply the initial migration plus seed script, script a weather minimum lookup structure, and expose a reusable Prisma client helper (for Next routes and future Lambdas) with accompanying validation/tests."
+      },
+      {
+        "id": "3",
+        "title": "Implement Amplify Auth & RBAC context",
+        "description": "Integrate AWS Amplify Auth (Cognito) with Next.js middleware, session hydration, and tRPC context enforcing RBAC per PRD.",
+        "details": "- Configure Amplify with `NEXT_PUBLIC_AMPLIFY_*` envs and set up hosted UI login pages in `app/(auth)` routes.\n- Add Next middleware to verify JWT via Amplify helper, inject user claims/role/training level into request headers/context.\n- Extend tRPC context creator to include authenticated user + role guard utility.\n- Implement RBAC helper (e.g., `requireRole(['ADMIN'])`) used across routers.\nPseudo:\n```ts\nconst createTRPCContext = async (opts: CreateContextOptions) => {\n  const token = await getCurrentUserToken(opts.req);\n  const user = decodeJwt(token);\n  return { prisma, user, assertRole: (roles) => {\n    if (!roles.includes(user.role)) throw new TRPCError({ code: 'UNAUTHORIZED' });\n  }};\n};\n```",
+        "testStrategy": "- Add middleware integration tests (Vitest + supertest) to ensure unauthorized requests fail.\n- Mock Amplify in unit tests to validate login/logout flows.\n- Manual Playwright test hitting `/app/(dashboard)` verifying redirect logic by role.",
+        "priority": "high",
+        "dependencies": [
+          "1",
+          "2"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Amplify Auth environment and providers",
+            "description": "Set up Amplify Auth configuration using NEXT_PUBLIC_AMPLIFY_* environment variables and ensure hosted UI pages exist under app/(auth).",
+            "dependencies": [],
+            "details": "Add required env vars, initialize Amplify in the client entry (e.g., Amplify.configure + AmplifyProvider) and verify hosted UI login/logout routes render properly.",
+            "status": "pending",
+            "testStrategy": "Smoke-test AmplifyProvider boot in dev and verify env loading via unit config test.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement Next.js middleware for Cognito JWT validation",
+            "description": "Create middleware/helper utilities to verify Cognito tokens and attach user claims, role, and training level onto request context headers.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use Amplify Auth helpers to parse JWT in middleware, handle redirects for unauthenticated users, and serialize claims for downstream access while preserving SSR compatibility.",
+            "status": "pending",
+            "testStrategy": "Add Vitest + supertest middleware tests covering valid token, expired token, and missing auth cases.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Extend tRPC context and procedures with authenticated user & role guards",
+            "description": "Augment createTRPCContext to include decoded user info and expose reusable role guard utilities (e.g., assertRole/requireRole).",
+            "dependencies": [
+              2
+            ],
+            "details": "Inject middleware-provided claims into tRPC context, define helper functions for RBAC checks, and update base procedures to enforce auth assumptions.",
+            "status": "pending",
+            "testStrategy": "Unit test context creation with mocked headers and ensure guard functions throw for unauthorized roles.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Wire RBAC helpers through routers and protected pages",
+            "description": "Adopt the new role guard utilities across existing tRPC routers and relevant Next.js routes to enforce PRD RBAC expectations.",
+            "dependencies": [
+              3
+            ],
+            "details": "Refactor router procedures and server components to call requireRole/role guards, ensuring students/instructors/admins only access allowed data; add fallback UI handling.",
+            "status": "pending",
+            "testStrategy": "Router-level integration tests verifying role-limited queries/mutations plus manual dashboard checks for access control.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Add auth/RBAC documentation and test coverage",
+            "description": "Document required env vars, login flows, and add targeted auth-focused tests to cover middleware, context, and RBAC behaviors.",
+            "dependencies": [
+              4
+            ],
+            "details": "Update README/ops docs with Amplify env guidance, expand Vitest/Playwright coverage for login redirects and role blocking, and ensure CI includes new suites.",
+            "status": "pending",
+            "testStrategy": "Combine unit/integration tests mentioned plus Playwright scenario ensuring role-specific redirects and unauthorized states behave.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 8,
+        "recommendedSubtasks": 5,
+        "expansionPrompt": "Create subtasks covering Amplify Auth configuration (envs, hosted UI, AmplifyProvider usage), Next.js middleware/session utilities to verify Cognito JWTs, augmenting the tRPC context + procedures with user info and role guards, wiring RBAC helpers through the nascent routers, and adding auth-focused unit/integration tests plus docs for env variables."
+      },
+      {
+        "id": "4",
+        "title": "Build bookings & instructor availability modules",
+        "description": "Deliver tRPC routers, Prisma services, and dashboard UI for managing bookings, instructor schedules, and calendar views.",
+        "details": "- tRPC routers: `bookings.router` for CRUD, status updates, weather history; `instructors.router` for availability patterns.\n- Use zod schemas for request/response, enforce role restrictions (students see own, instructors see assigned, admins global).\n- Frontend: shadcn tables/cards + Calendar view (e.g., `react-big-calendar` alternative) inside student/instructor dashboards, hooking TanStack Query + optimistic mutations.\n- Include instructor availability editor (weekly repeats + exceptions) stored via JSONB.\nPseudo:\n```ts\nconst bookingsRouter = createTRPCRouter({\n  list: protectedProcedure.query(({ ctx }) => ctx.prisma.booking.findMany({...})),\n  create: protectedProcedure.input(createBookingSchema).mutation(({ ctx, input }) => ctx.prisma.booking.create({ data: input })),\n});\n```\n",
+        "testStrategy": "- Unit tests for zod schemas and service functions (Vitest with Prisma test db).\n- Playwright integration covering booking creation/edit/cancel per role.\n- Verify optimistic updates via mocked TanStack Query tests or Storybook interactions.",
+        "priority": "high",
+        "dependencies": [
+          "2",
+          "3"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Assess domain models and Prisma schemas",
+            "description": "Review existing booking and instructor data models plus required fields for availability JSONB.",
+            "dependencies": [],
+            "details": "Inspect Prisma schema, confirm relationships, identify new enums/statuses/weather metadata needed before coding services.",
+            "status": "pending",
+            "testStrategy": "Schema linting or migration dry-run to confirm model validity.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement Prisma service helpers",
+            "description": "Create service layer functions for bookings CRUD, status updates, weather history, and instructor availability accessors.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add typed helpers with RBAC-aware filters, include JSONB availability serialization, ensure transactional safety for updates.",
+            "status": "pending",
+            "testStrategy": "Vitest unit tests mocking Prisma client for each helper path.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Build bookings and instructors tRPC routers",
+            "description": "Expose tRPC endpoints using zod schemas for booking flows and availability patterns with role checks.",
+            "dependencies": [
+              2
+            ],
+            "details": "Define zod input/output schemas, wire to service helpers, enforce student/instructor/admin visibility, support optimistic mutation responses.",
+            "status": "pending",
+            "testStrategy": "Router unit tests validating RBAC behavior and schema validation errors.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Create shared calendar and availability utilities",
+            "description": "Develop reusable utilities for calendar events, availability transformations, and JSONB merge logic.",
+            "dependencies": [
+              2
+            ],
+            "details": "Provide formatters/parsers for calendar UI, convert service data to calendar-friendly structures, handle weekly repeats plus exceptions.",
+            "status": "pending",
+            "testStrategy": "Unit tests verifying calendar conversion accuracy and exception handling.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Develop dashboard UI modules",
+            "description": "Implement shadcn tables/cards, calendar view, and availability editor for student/instructor dashboards using TanStack Query.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Wire front-end components to tRPC hooks with optimistic updates, include status badges, weather history, and availability editing flows.",
+            "status": "pending",
+            "testStrategy": "Component tests or Storybook interactions validating optimistic updates and editor UX.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Write integration and e2e tests",
+            "description": "Add Vitest and Playwright coverage for bookings CRUD, role access, calendar updates, and availability editing.",
+            "dependencies": [
+              5
+            ],
+            "details": "Cover schema/service units, router integration, and dashboard flows for create/edit/cancel per role plus optimistic mutation checks.",
+            "status": "pending",
+            "testStrategy": "Vitest for units/integration, Playwright for full dashboard scenarios across roles.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 8,
+        "recommendedSubtasks": 6,
+        "expansionPrompt": "Decompose into subtasks for implementing Prisma service helpers, building bookings and instructors tRPC routers with zod validation + RBAC, creating shared calendar/availability utilities, developing the dashboard UI (tables, cards, calendar, editor) using shadcn + TanStack Query with optimistic flows, integrating availability JSONB storage, and writing unit/e2e tests for critical flows."
+      },
+      {
+        "id": "5",
+        "title": "Implement waypoint & weather evaluation logic",
+        "description": "Create shared library to derive flight path waypoints and evaluate weather minimums per training level, exposed via `weather.router`.",
+        "details": "- Utility to compute great-circle route (haversine) and generate points every 30 minutes; fallback circular pattern for local flights.\n- Integrate OpenWeatherMap API client configurable per env; include caching layer (Redis) + rate-limit handling.\n- Encode weather minimums table as data structure, evaluate each waypoint for visibility, ceiling, winds, prohibited conditions.\n- Expose manual weather check endpoint in tRPC + admin UI widget to trigger checks and show violation reasons.\nPseudo:\n```ts\nfunction evaluateWaypoint(waypoint, obs, trainingLevel) {\n  const limits = WEATHER_LIMITS[trainingLevel];\n  if (obs.visibility < limits.visibility) return { safe: false, reason: 'VISIBILITY' };\n  return { safe: true };\n}\n```\n",
+        "testStrategy": "- Vitest unit tests covering waypoint math, each training level thresholds, prohibited condition detection.\n- Mock OpenWeatherMap responses to ensure parsing works; add contract tests for Redis caching fallback.\n- Manual test via `weather.router.manualCheck` hitting dev API route.",
+        "priority": "medium",
+        "dependencies": [
+          "2",
+          "4"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design waypoint generation utilities and data contracts",
+            "description": "Define the shared library structure, waypoint interfaces, and flight route generation behaviors.",
+            "dependencies": [],
+            "details": "Document haversine-based great-circle calculations, 30-minute waypoint cadence, and local-flight fallback patterns; outline module exports shared by router/Lambda consumers.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement weather minimum tables and waypoint evaluation logic",
+            "description": "Encode training-level weather thresholds and implement evaluation helpers.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create structured lookup for visibility, ceiling, winds, prohibited conditions; implement `evaluateWaypoint` and aggregators returning violation reasons per waypoint and route.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Integrate OpenWeatherMap client with caching and rate limiting",
+            "description": "Add configurable API client plus Redis-backed cache and throttle handling.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Implement env-driven client factory, request deduplication, cache persistence with expirations, and graceful degradation when rate limits or cache misses occur.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Expose weather logic via tRPC router and admin trigger UI",
+            "description": "Wire shared logic into `weather.router` endpoints and admin widget.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Add manual-check mutation, batching waypoint evaluations, surfacing violation reasons, and build dashboard widget/button to trigger refreshes and display status.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Create comprehensive Vitest coverage for math, limits, and caching",
+            "description": "Write unit/integration tests for waypoint math, minima enforcement, and caching behaviors.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Add Vitest suites mocking OpenWeatherMap + Redis, verifying route generation accuracy, per-training evaluation correctness, rate-limit fallbacks, and tRPC endpoint contracts.",
+            "status": "pending",
+            "testStrategy": "Vitest unit + integration suites with mocked weather/caching layers",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 7,
+        "recommendedSubtasks": 5,
+        "expansionPrompt": "Plan subtasks to create a shared weather/waypoint library (haversine, waypoint generation, fallback patterns), integrate the OpenWeatherMap client with env-driven config plus Redis caching/rate limiting, encode and load the training-level weather minimum tables, expose the logic through a tRPC weather router + admin trigger endpoint, and add comprehensive Vitest coverage for math, thresholds, and caching behavior."
+      },
+      {
+        "id": "6",
+        "title": "Weather Monitor Lambda & EventBridge pipeline",
+        "description": "Build Lambda 1 (weather monitor) with EventBridge trigger to scan bookings, run weather checks, and enqueue conflicts to SQS.",
+        "details": "- Create lambda package (esbuild/bundler) on Node 20 with shared code from task 5 via workspace package.\n- Logic: fetch bookings within next 48h, compute waypoints, call OWM API, evaluate; update booking status to `WEATHER_HOLD` and persist WeatherCheck records.\n- Publish conflict payload to `RESCHEDULE_QUEUE_URL` with booking + violations summary; include DLQ + retry policy.\n- Provision EventBridge rule `cron(0 * * * ? *)` targeting lambda and add CloudWatch structured logging (Pino) + metrics.\nPseudo:\n```ts\nfor (const booking of bookings) {\n  const result = await checkWeather(booking);\n  if (!result.safe) {\n    await prisma.booking.update({ data: { status: 'WEATHER_HOLD' } });\n    await sqs.sendMessage({ QueueUrl, MessageBody: JSON.stringify(payload) });\n  }\n}\n```\n",
+        "testStrategy": "- Write unit tests with Vitest mocking Prisma/OWM/SQS to verify branching.\n- Integration test via LocalStack invoking lambda handler with seeded bookings.\n- Add monitoring alarms for >3 failures/5min and verify via CloudWatch metric assertions in IaC template tests.",
+        "priority": "high",
+        "dependencies": [
+          "5"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Lambda package with shared weather module",
+            "description": "Initialize Node 20 Lambda workspace with bundler and shared code wiring.",
+            "dependencies": [],
+            "details": "Scaffold Lambda package using esbuild (or equivalent), configure package.json/scripts, wire workspace dependency on shared weather module from task 5, ensure env/config placeholders for Prisma, OWM, SQS, and include basic handler stub ready for logic.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement Prisma-driven booking scan and weather checks",
+            "description": "Add hourly scan logic to fetch bookings, run weather evaluation, and update state.",
+            "dependencies": [
+              1
+            ],
+            "details": "Within handler, query bookings within 48h via Prisma, compute waypoints, call shared weather checker, update bookings to WEATHER_HOLD and persist WeatherCheck records, structure result payload for conflicts including violations summary for downstream processing.",
+            "status": "pending",
+            "testStrategy": "Vitest unit tests mocking Prisma + weather module to cover safe vs unsafe branches",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Publish conflict payloads to SQS with DLQ/retry support",
+            "description": "Wire SQS integration for conflict payload publishing and durability controls.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate AWS SDK client, send JSON payloads to RESCHEDULE_QUEUE_URL, configure message attributes, ensure idempotency keys, add DLQ queue definitions plus retry policy/backoff via IaC templates, document env vars required.",
+            "status": "pending",
+            "testStrategy": "Mocked SQS client tests verifying payload shape, DLQ wiring validated via IaC unit tests",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Provision EventBridge schedule, IAM, and observability",
+            "description": "Create IaC for cron trigger, permissions, logging, and metrics.",
+            "dependencies": [
+              3
+            ],
+            "details": "Define EventBridge rule cron(0 * * * ? *), target Lambda with necessary input, attach IAM policies for RDS/Prisma, SQS, CloudWatch, configure Pino logger + structured metrics/alarms (failures>3/5min), update deployment scripts to include resources and parameters.",
+            "status": "pending",
+            "testStrategy": "IaC validation tests (e.g., cdk synth/assert) plus unit checks ensuring logging hooks emit expected fields",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Add local testing scripts plus unit/integration coverage",
+            "description": "Create test harness using Vitest and LocalStack flows.",
+            "dependencies": [
+              4
+            ],
+            "details": "Expand tests to cover handler logic with mocked services, add integration test invoking Lambda against LocalStack (EventBridge/SQS) with seeded bookings, include scripts to spin LocalStack locally, document setup steps in README and ensure CI pipeline runs suites.",
+            "status": "pending",
+            "testStrategy": "Vitest for unit coverage; integration test invoking Lambda via LocalStack verifying booking updates and SQS messages",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 8,
+        "recommendedSubtasks": 5,
+        "expansionPrompt": "Break into subtasks for setting up the Lambda workspace/bundler that reuses the shared weather module, implementing the hourly scan/update logic with Prisma and SQS publishing, provisioning EventBridge rules + DLQ/retry/IaC definitions, wiring structured logging/metrics plus local LocalStack scripts, and adding unit/integration tests (mocked services + LocalStack) to validate the flow."
+      },
+      {
+        "id": "7",
+        "title": "AI Rescheduler Lambda & persistence",
+        "description": "Implement Lambda 2 consuming SQS, generating GPT-4 reschedule options via Vercel AI SDK, validating instructor availability/weather, and storing logs.",
+        "details": "- Set up SQS poller (lambda event) with batching; parse payload, fetch booking, instructor availability, future weather forecast.\n- Craft structured GPT-4 prompt with context (training level, minimas, availability windows) expecting JSON schema output of three options with reasoning/confidence.\n- Validate AI output (zod) and discard unsafe slots (rerun prompt or fallback heuristics). Persist `RescheduleLog` entries with metadata and mark booking `AWAITING_RESPONSE`.\n- Publish notifications to SNS (for downstream) and include DLQ/retry/backoff.\nPseudo:\n```ts\nconst { suggestions } = await generateText({\n  model: openai('gpt-4'),\n  prompt: buildPrompt(booking, availability)\n});\nconst parsed = rescheduleSchema.parse(JSON.parse(suggestions));\nawait prisma.rescheduleLog.createMany({ data: parsed.options });\n```\n",
+        "testStrategy": "- Unit tests mocking GPT responses, ensuring validation rejects malformed data.\n- LocalStack integration test pushing SQS message and asserting DB rows created + SNS invoked.\n- Load test (small) ensuring Lambda completes within 2 min using representative dataset.",
+        "priority": "high",
+        "dependencies": [
+          "6"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Lambda package and SQS trigger configuration",
+            "description": "Set up the Lambda 2 package structure, bundler config, and SQS event source mapping with DLQ/backoff.",
+            "dependencies": [],
+            "details": "Create Lambda directory, configure esbuild/tsconfig, add SQS batch event handler wiring, specify DLQ, retry/backoff policy, and environment variables.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement handler scaffolding and booking data retrieval",
+            "description": "Build the Lambda handler skeleton that parses SQS payloads and fetches booking, instructor availability, and forecast data.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add handler that iterates records, validates payload shape, queries Prisma for bookings/instructors, and calls weather service/forecast client with batching safeguards.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Craft GPT-4 prompt generation and response validation",
+            "description": "Integrate Vercel AI SDK call, structured prompt creation, and zod validation with fallback heuristics.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement prompt builder using booking context, invoke GPT-4 via Vercel AI SDK, parse JSON output, validate using zod schemas, retry or fallback when suggestions invalid or unsafe.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Persist reschedule logs and update booking status",
+            "description": "Store validated suggestions, metadata, and update booking status to AWAITING_RESPONSE via Prisma.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create persistence layer writing RescheduleLog entries with reasoning/confidence, wrap in transaction with booking status update to ensure consistency and idempotency.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Publish SNS notifications and finalize event outcomes",
+            "description": "Emit downstream notifications and ensure DLQ/error handling behavior is robust.",
+            "dependencies": [
+              4
+            ],
+            "details": "Wire SNS publish calls after persistence, include deduplication/context attributes, handle failures with retries/dead-letter routing, log structured outcomes for observability.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Develop automated tests and LocalStack integration coverage",
+            "description": "Add unit tests mocking AI responses and LocalStack-based integration test covering SQS->Lambda->SNS flow.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "details": "Write Vitest suites for prompt builder, validation, persistence, and error cases; create LocalStack test harness pushing SQS messages, asserting DB records and SNS publishes for end-to-end coverage.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 9,
+        "recommendedSubtasks": 6,
+        "expansionPrompt": "Outline subtasks for creating the SQS-triggered Lambda (bundler config, handler skeleton), fetching bookings/instructor availability/weather data, crafting/validating structured GPT-4 prompts via Vercel AI SDK with zod-validated responses and fallback logic, persisting RescheduleLog entries + booking status transitions, publishing SNS notifications + DLQ/backoff setup, and implementing thorough unit/integration tests with mocked AI + LocalStack resources."
+      },
+      {
+        "id": "8",
+        "title": "Reschedule UI & workflows",
+        "description": "Surface AI suggestions in dashboard, enable confirmations, and expose supporting tRPC endpoints (`reschedule.router`).",
+        "details": "- `reschedule.router`: `getSuggestions`, `confirm`, `decline`, `requestManual` with RBAC (students confirm, instructors override, admin see all).\n- UI components in `app/(dashboard)/student/reschedules` using shadcn cards to list options (date/time, reasoning, confidence) with accept/decline actions and timeline of status.\n- Incorporate TanStack Query mutations with optimistic updates, toasts via Sonner, and SSE subscription for new suggestions.\n- Persist confirmation to bookings + log selected option.\nPseudo:\n```ts\nconst { data } = trpc.reschedule.getSuggestions.useQuery({ bookingId });\nconst mutation = trpc.reschedule.confirm.useMutation({ onSuccess: refetch });\n```\n",
+        "testStrategy": "- Component tests with React Testing Library verifying states and actions.\n- Playwright E2E covering scenario: weather hold booking -> suggestions show -> confirm option updates booking status.\n- Contract tests for tRPC router using supertest + in-memory Prisma.",
+        "priority": "medium",
+        "dependencies": [
+          "4",
+          "7"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define reschedule domain models and RBAC rules",
+            "description": "Capture data models and role guards for reschedule suggestions and actions.",
+            "dependencies": [],
+            "details": "Document booking states, suggestion payload structure, and RBAC guard helpers so router procedures can validate student, instructor, admin permissions.",
+            "status": "pending",
+            "testStrategy": "Peer review of RBAC matrix plus unit tests for guard helpers.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement tRPC reschedule router procedures",
+            "description": "Build getSuggestions, confirm, decline, requestManual handlers with RBAC enforcement.",
+            "dependencies": [
+              1
+            ],
+            "details": "Wire Prisma queries/mutations, logging, and booking state updates in reschedule.router using the models and guards defined earlier.",
+            "status": "pending",
+            "testStrategy": "Contract tests via supertest + in-memory Prisma covering each procedure and role.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Create dashboard UI components for AI suggestions",
+            "description": "Build shadcn card list and timeline UI in student reschedules view consuming TanStack Query.",
+            "dependencies": [
+              2
+            ],
+            "details": "Render suggestion cards showing date/time, reasoning, confidence, and action buttons plus status timeline, driven by trpc.reschedule.getSuggestions.",
+            "status": "pending",
+            "testStrategy": "React Testing Library component tests validating loading, empty, and populated states.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Integrate optimistic mutations, toasts, and SSE updates",
+            "description": "Hook confirm/decline/manual actions to TanStack mutations with optimistic UI and live updates.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Configure useMutation handlers with optimistic cache updates, Sonner toasts, SSE listener to append suggestions, and ensure confirmations persist booking/log state locally.",
+            "status": "pending",
+            "testStrategy": "Integration-style component tests simulating mutations plus mocked SSE events.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Add end-to-end validation for reschedule workflow",
+            "description": "Cover backend and frontend flow from suggestion display through confirmation.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Expand test suite with RTL interaction tests for component logic, Playwright E2E for student confirmation path, and regression cases for role restrictions.",
+            "status": "pending",
+            "testStrategy": "Playwright scenario plus targeted component tests exercising confirm/decline path.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 7,
+        "recommendedSubtasks": 5,
+        "expansionPrompt": "Create subtasks to implement the reschedule tRPC router (get/confirm/decline/manual) with RBAC hooks, build dashboard UI components for listing and acting on AI suggestions using shadcn cards + TanStack Query, wire optimistic mutations/toasts/SSE listeners for live updates, handle booking state persistence/logging, and add component/E2E tests covering the end-to-end reschedule confirmation path."
+      },
+      {
+        "id": "9",
+        "title": "Notification pipeline & SSE real-time delivery",
+        "description": "Implement multi-channel notifications via SNS/SES, SSE endpoint, and in-app notification center UI.",
+        "details": "- Backend: create notification service subscribing to SNS topic, inserting records into `Notifications` table and triggering SES emails; expose SSE route (`/api/notifications/stream`) streaming new events per user via Prisma changefeed/Redis pubsub.\n- Frontend: Notification listener hook to maintain SSE connection with auto-retry + fallback polling; UI center listing unread/read, filters by type.\n- Integrate with Lambdas (tasks 6/7) to publish events when weather hold or new suggestions occur.\nPseudo:\n```ts\nconst eventStream = new ReadableStream({\n  start(controller) {\n    notifier.on(userId, (payload) => controller.enqueue(`data: ${JSON.stringify(payload)}\\n\\n`));\n  }\n});\nreturn new NextResponse(eventStream, { headers: { 'Content-Type': 'text/event-stream' }});\n```\n",
+        "testStrategy": "- Unit tests for notification service to ensure SNS payload parsing + DB writes.\n- Playwright test verifying SSE push updates UI without refresh.\n- Load test SSE endpoint with multiple clients (locally) ensuring reconnection works; monitor CloudWatch metrics for SNS/SES success.",
+        "priority": "medium",
+        "dependencies": [
+          "6",
+          "7",
+          "8"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement SNS subscription handler service",
+            "description": "Create backend service consuming SNS events into Notifications and triggering SES.",
+            "dependencies": [],
+            "details": "Provision SNS subscription endpoint (Lambda/Next API) that parses payloads, validates notification type, inserts records via Prisma, and conditionally invokes SES templated email sends. Wire retries and DLQ logging.",
+            "status": "pending",
+            "testStrategy": "Unit tests mocking SNS payloads, Prisma, and SES client to ensure writes, retries, and error paths.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Expose `/api/notifications/stream` SSE endpoint",
+            "description": "Deliver per-user SSE stream backed by Redis/pubsub and DB changefeed.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement Next.js route returning ReadableStream with keep-alive heartbeats, subscribe to Redis channel per user, enqueue JSON events, and backfill latest unread notifications on connect. Handle disconnect cleanup and auth guard.",
+            "status": "pending",
+            "testStrategy": "Integration test spinning up mocked Redis publisher to confirm SSE emits events and connection closes cleanly.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Publish notification events from Lambdas & backend flows",
+            "description": "Emit SNS/Redis events from weather hold and suggestion Lambdas plus server actions.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Update tasks 6/7 Lambdas and any relevant Next server routes to publish structured messages to SNS topic and Redis fan-out when state changes (weather hold, new suggestion). Ensure idempotent publishing and include metadata for UI filters.",
+            "status": "pending",
+            "testStrategy": "LocalStack/SQS/SNS integration tests verifying Lambda publishes expected payload and downstream handler stores notification once.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Build frontend notification listener hook",
+            "description": "Create React hook maintaining SSE connection with retry and polling fallback.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Implement hook that opens authenticated EventSource to `/api/notifications/stream`, handles exponential backoff reconnect, falls back to REST polling after repeated failures, normalizes events, and exposes state to UI consumers.",
+            "status": "pending",
+            "testStrategy": "React hook unit tests simulating EventSource events and timeouts to verify reconnect logic and polling fallback.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Implement notification center UI with read/unread management",
+            "description": "Add UI listing notifications, filters, and mark-read controls.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create notification drawer/page showing grouped unread/read lists, filter chips by type, mark-as-read bulk actions hitting API, and badge counts. Persist read status with optimistic updates and accessibility-friendly layout.",
+            "status": "pending",
+            "testStrategy": "Playwright UI test exercising filter, mark-as-read, and ensuring live updates reflect hook data.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Add comprehensive notification testing & load validation",
+            "description": "Cover system with unit, E2E, and load tests for fan-out reliability.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "details": "Extend test suite with SNS handler unit cases, hook integration tests, SSE load script simulating many clients, and Playwright scenario confirming real-time updates without refresh. Document runbooks/metrics to monitor SNS/SES success.",
+            "status": "pending",
+            "testStrategy": "Automate Vitest/Playwright suites plus k6 or autocannon script for SSE load; collect metrics to validate reconnect under load.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 8,
+        "recommendedSubtasks": 6,
+        "expansionPrompt": "Plan subtasks for building the backend notification service (SNS subscription handler, DB writes, SES email trigger), creating the `/api/notifications/stream` SSE endpoint with Redis/pubsub integration, updating Lambdas and app flows to publish notification events, implementing the frontend notification center + listener hook with retry/polling, ensuring read/unread management, and adding unit/E2E/load tests for SSE + notification fan-out."
+      },
+      {
+        "id": "10",
+        "title": "Testing, monitoring & CI/CD coverage",
+        "description": "Establish automated tests, observability, and GitHub Actions pipeline per PRD success metrics.",
+        "details": "- Implement Vitest suites for weather logic, AI parsing, booking services; Playwright E2E for booking/reschedule/notification flows; ensure coverage reports (>=80%).\n- Configure GitHub Actions workflow: lint, typecheck, unit tests, Playwright against Docker services, build/deploy Lambdas & Next to Amplify.\n- Add CloudWatch dashboards/alarms (Lambda errors, SQS backlog, API latency, DB connections) via IaC (CDK/Terraform) and integrate Sentry optional hook.\n- Document operational runbooks + environment variable requirements.\nPseudo:\n```yaml\njobs:\n  ci:\n    steps:\n      - run: npm run lint && npm run test:unit && npm run test:e2e\n      - run: npx cdk deploy WeatherMonitorLambda\n```\n",
+        "testStrategy": "- Validate CI locally via `act` or dry-run; confirm coverage thresholds enforced.\n- Simulate alarm conditions using CloudWatch metric filters in dev.\n- Peer review runbooks and ensure onboarding doc describes verification steps.",
+        "priority": "medium",
+        "dependencies": [
+          "1",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Author Vitest suites for weather, AI parsing, booking services",
+            "description": "Design and implement comprehensive Vitest coverage for core weather logic, AI parsing, and booking service domains with 80%+ thresholds.",
+            "dependencies": [],
+            "details": "Build unit tests validating waypoint evaluations, AI parsing accuracy, booking workflows, and integrate coverage tooling into package scripts ensuring thresholds are enforced.",
+            "status": "pending",
+            "testStrategy": "Run `npm run test:unit` with coverage flag locally, verify >80% per domain.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Develop Playwright E2E coverage for booking/reschedule/notification flows",
+            "description": "Create Playwright scenarios spanning booking creation, reschedule handling, and notification delivery to ensure critical user journeys.",
+            "dependencies": [
+              1
+            ],
+            "details": "Author cross-role E2E specs invoking Dockerized services to validate booking lifecycle, weather holds, and notification center reactions with retry logic.",
+            "status": "pending",
+            "testStrategy": "Execute `npm run test:e2e` against local docker-compose, capture screenshots/videos for failures.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Configure GitHub Actions pipeline for lint/type/unit/e2e/build/deploy",
+            "description": "Establish CI workflow orchestrating lint, typecheck, Vitest, Playwright (with Docker), and build/deploy steps for Lambdas and Next.js to Amplify.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create YAML workflow running on PRs with caching, service containers for dependencies, coverage artifact upload, and gated deploy job triggering CDK and Amplify builds.",
+            "status": "pending",
+            "testStrategy": "Dry-run via `act` where possible and confirm workflow passes in a feature branch.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Provision observability stack via IaC (CloudWatch dashboards/alarms, Sentry hook)",
+            "description": "Implement CDK/Terraform definitions that emit dashboards and alarms for Lambda errors, SQS backlog, API latency, DB connections, plus optional Sentry integration.",
+            "dependencies": [
+              3
+            ],
+            "details": "Define metrics/alarm resources, attach notification channels, ensure IaC module reusable, and wire Sentry DSN parameter for lambdas when enabled.",
+            "status": "pending",
+            "testStrategy": "Use IaC plan/apply in sandbox env, then simulate metrics (e.g., CW set-metric) to confirm alarms trigger.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Document runbooks and environment variable requirements",
+            "description": "Create operational runbooks covering test commands, CI workflows, monitoring responses, and required env vars for developers and on-call staff.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Author markdown covering how to run tests locally, interpret CI failures, respond to alarms, rotate secrets/env vars, and link to dashboards/Sentry.",
+            "status": "pending",
+            "testStrategy": null,
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 7,
+        "recommendedSubtasks": 5,
+        "expansionPrompt": "Break down into subtasks covering Vitest suites for critical domains (weather logic, AI parsing, booking services), Playwright E2E pipelines across key workflows, GitHub Actions configuration running lint/typecheck/unit/e2e plus build/deploy steps against Docker services, infrastructure monitoring setup (CloudWatch dashboards/alarms, optional Sentry hooks) via IaC, and documentation/runbooks for test commands and operational responses."
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2025-11-07T23:38:25.966Z",
+      "taskCount": 10,
+      "completedCount": 1,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+	"meta": {
+		"generatedAt": "2025-11-07T22:46:20.886Z",
+		"tasksAnalyzed": 10,
+		"totalTasks": 10,
+		"analysisCount": 10,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Bootstrap Next.js 15 stack & tooling",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break this bootstrap into concrete steps: initialize the Next.js 15.1.8 + TS app in this otherwise empty repo, install/configure Tailwind 4, shadcn/ui, TanStack Query, tRPC, Amplify, Prisma, AWS/Vercel/OpenAI SDKs, set up ESLint/Prettier/Vitest/Playwright/Husky, scaffold the mandated App Router segments and API routes (including /api/trpc and /api/notifications/stream), add Docker Compose services plus .env.example wiring, implement base providers/layout + SSE hook placeholder, and document the verification commands.",
+			"reasoning": "The repository currently only holds Taskmaster metadata—there is no package.json or Next.js app—so every framework, dependency, config file, Docker Compose service, and layout/provider scaffold must be created from scratch and wired together correctly, which is substantial multistep work."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Model database schema & Prisma layer",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Outline subtasks to create prisma/schema.prisma with the PRD models/enums, configure PostgreSQL datasource + extensions, generate and apply the initial migration plus seed script, script a weather minimum lookup structure, and expose a reusable Prisma client helper (for Next routes and future Lambdas) with accompanying validation/tests.",
+			"reasoning": "With no Prisma setup or database artifacts in the repo, the team must design multiple related models, enums, and seed data from the PRD, configure migrations against Postgres, and prepare shared client helpers and tests, which is moderate-to-high effort but largely self-contained once Task 1 scaffolding exists."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement Amplify Auth & RBAC context",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Create subtasks covering Amplify Auth configuration (envs, hosted UI, AmplifyProvider usage), Next.js middleware/session utilities to verify Cognito JWTs, augmenting the tRPC context + procedures with user info and role guards, wiring RBAC helpers through the nascent routers, and adding auth-focused unit/integration tests plus docs for env variables.",
+			"reasoning": "There is no auth or middleware infrastructure yet, so integrating Amplify/Cognito, ensuring SSR-safe session hydration, and enforcing role-based access inside a brand-new tRPC stack require coordinated changes across config, middleware, and API layers with ample edge-case handling."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Build bookings & instructor availability modules",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Decompose into subtasks for implementing Prisma service helpers, building bookings and instructors tRPC routers with zod validation + RBAC, creating shared calendar/availability utilities, developing the dashboard UI (tables, cards, calendar, editor) using shadcn + TanStack Query with optimistic flows, integrating availability JSONB storage, and writing unit/e2e tests for critical flows.",
+			"reasoning": "No application routes, routers, or UI components exist yet, so delivering full CRUD, role-aware data access, calendar interactions, and instructor availability editors spans backend schema usage, tRPC design, and complex frontend state handling, all of which must align with patterns still being established."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement waypoint & weather evaluation logic",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Plan subtasks to create a shared weather/waypoint library (haversine, waypoint generation, fallback patterns), integrate the OpenWeatherMap client with env-driven config plus Redis caching/rate limiting, encode and load the training-level weather minimum tables, expose the logic through a tRPC weather router + admin trigger endpoint, and add comprehensive Vitest coverage for math, thresholds, and caching behavior.",
+			"reasoning": "This is greenfield computational logic plus third-party API integration and caching; while scoped to one domain, it requires careful math, data modeling, and test coverage, and must be packaged for reuse by upcoming Lambdas and the dashboard."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Weather Monitor Lambda & EventBridge pipeline",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break into subtasks for setting up the Lambda workspace/bundler that reuses the shared weather module, implementing the hourly scan/update logic with Prisma and SQS publishing, provisioning EventBridge rules + DLQ/retry/IaC definitions, wiring structured logging/metrics plus local LocalStack scripts, and adding unit/integration tests (mocked services + LocalStack) to validate the flow.",
+			"reasoning": "No Lambda infrastructure exists, so packaging shared code, orchestrating Prisma access from a serverless context, handling AWS integrations (EventBridge, SQS, DLQ), and ensuring observability/testing constitute a complex deployment-oriented effort."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "AI Rescheduler Lambda & persistence",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Outline subtasks for creating the SQS-triggered Lambda (bundler config, handler skeleton), fetching bookings/instructor availability/weather data, crafting/validating structured GPT-4 prompts via Vercel AI SDK with zod-validated responses and fallback logic, persisting RescheduleLog entries + booking status transitions, publishing SNS notifications + DLQ/backoff setup, and implementing thorough unit/integration tests with mocked AI + LocalStack resources.",
+			"reasoning": "This Lambda chains multiple systems—SQS, Prisma, GPT-4 via Vercel AI SDK, validation, SNS notifications—and must implement robust safety checks and persistence, making it the most intricate pipeline component with significant failure-mode handling and testing needs."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Reschedule UI & workflows",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Create subtasks to implement the reschedule tRPC router (get/confirm/decline/manual) with RBAC hooks, build dashboard UI components for listing and acting on AI suggestions using shadcn cards + TanStack Query, wire optimistic mutations/toasts/SSE listeners for live updates, handle booking state persistence/logging, and add component/E2E tests covering the end-to-end reschedule confirmation path.",
+			"reasoning": "No reschedule data flows exist yet, so this task requires simultaneous backend router work, complex UI state management, SSE integration, and QA to ensure the AI-driven workflow behaves correctly across roles."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Notification pipeline & SSE real-time delivery",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Plan subtasks for building the backend notification service (SNS subscription handler, DB writes, SES email trigger), creating the `/api/notifications/stream` SSE endpoint with Redis/pubsub integration, updating Lambdas and app flows to publish notification events, implementing the frontend notification center + listener hook with retry/polling, ensuring read/unread management, and adding unit/E2E/load tests for SSE + notification fan-out.",
+			"reasoning": "Implementing multi-channel notifications demands new backend services, streaming endpoints, pub/sub infrastructure, and UI + hook work, all from scratch, and they must align with upcoming Lambda events—making coordination and testing nontrivial."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Testing, monitoring & CI/CD coverage",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down into subtasks covering Vitest suites for critical domains (weather logic, AI parsing, booking services), Playwright E2E pipelines across key workflows, GitHub Actions configuration running lint/typecheck/unit/e2e plus build/deploy steps against Docker services, infrastructure monitoring setup (CloudWatch dashboards/alarms, optional Sentry hooks) via IaC, and documentation/runbooks for test commands and operational responses.",
+			"reasoning": "Because no automated testing, CI, or observability tooling exists yet, this task must establish multi-layer test suites, a complex GitHub Actions workflow that orchestrates Dockerized dependencies, and monitoring/alerting definitions—sizable but more mechanical once prior features land."
+		}
+	]
+}
