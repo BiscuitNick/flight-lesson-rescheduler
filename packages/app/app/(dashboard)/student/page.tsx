@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/providers/auth-provider';
 import { trpc } from '@/lib/trpc/client';
 import { signOut } from '@/lib/auth/actions';
 import { useRouter } from 'next/navigation';
+import { UpcomingBookings } from '@/components/bookings';
 
 export default function StudentDashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -63,14 +64,9 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      {/* Dashboard content placeholders */}
+      {/* Dashboard content */}
       <div className="grid gap-4">
-        <div className="rounded-lg border bg-white p-4">
-          <h2 className="mb-2 text-lg font-semibold">Upcoming Lessons</h2>
-          <p className="text-sm text-gray-600">
-            Lesson list to be implemented with tRPC (Task 4)
-          </p>
-        </div>
+        <UpcomingBookings />
 
         <div className="rounded-lg border bg-white p-4">
           <h2 className="mb-2 text-lg font-semibold">Weather Alerts</h2>
