@@ -114,7 +114,7 @@
         "id": "2",
         "title": "Model database schema & Prisma layer",
         "description": "Design the Prisma 5.x schema for Users, Bookings, WeatherChecks, RescheduleLogs, Notifications (plus weather minima) with full relations/enums, then run migrations/seed data while ensuring every artifact stays on the validated Prisma 5.x latest track rather than the unconfirmed 6.x line.",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           "1"
         ],
@@ -128,7 +128,7 @@
             "description": "Review the PRD and existing docs to list all fields, relationships, and enum values needed for Users, Bookings, WeatherChecks, RescheduleLogs, Notifications, and weather minimums.",
             "dependencies": [],
             "details": "Gather every attribute, relation cardinality, and enum option from the PRD so the Prisma models will be complete and aligned with business rules before touching schema files.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Peer review the requirements checklist or run a diff against PRD tables.",
             "parentId": "undefined"
           },
@@ -140,7 +140,7 @@
               1
             ],
             "details": "Author the full `prisma/schema.prisma` entities, relation fields, indexes, and optional JSON/lookup model for weather minima ensuring PG extensions (uuid/citext) are configured in the datasource block, and confirm no Prisma 6.x-only features (e.g., `@@define` macros) are introduced so the file stays valid under Prisma 5.x latest.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `npx prisma validate` to ensure the schema is syntactically correct under Prisma 5.x.",
             "parentId": "undefined"
           },
@@ -152,7 +152,7 @@
               2
             ],
             "details": "Use `npx prisma migrate dev` (with shadow DB if needed) so the SQL in `prisma/migrations/*/migration.sql` enables uuid/citext, creates the models, and documents the dependency on Prisma 5.x in the migration README or commit message for traceability.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Inspect the generated SQL and run `npx prisma migrate status` to confirm the migration is applied while Prisma CLI reports a 5.x version.",
             "parentId": "undefined"
           },
@@ -164,7 +164,7 @@
               3
             ],
             "details": "Create `prisma/seed.ts` (or similar) populating sample data covering multiple roles/status combos, import the Prisma 5.x client from `@prisma/client`, and ensure it runs via `npx prisma db seed`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Execute `npx prisma db seed` and query via Prisma or psql to verify inserted records.",
             "parentId": "undefined"
           },
@@ -176,7 +176,7 @@
               3
             ],
             "details": "Implement a singleton/client factory module (e.g., `src/server/db/prisma.ts`) that instantiates the Prisma 5.x client with connection pooling safeguards, add any zod schema helpers, and cover them with unit tests (e.g., Vitest) ensuring type-safe access patterns.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `npx prisma validate` and project test suite (e.g., `pnpm test` or targeted Vitest) to confirm helper correctness.",
             "parentId": "undefined"
           }
@@ -860,9 +860,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-07T23:38:25.966Z",
+      "lastModified": "2025-11-08T00:10:00.000Z",
       "taskCount": 10,
-      "completedCount": 1,
+      "completedCount": 2,
       "tags": [
         "master"
       ]
