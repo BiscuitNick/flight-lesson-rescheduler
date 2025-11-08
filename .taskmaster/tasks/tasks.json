@@ -361,7 +361,7 @@
           "2",
           "4"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -369,7 +369,7 @@
             "description": "Define the shared library structure, waypoint interfaces, and flight route generation behaviors.",
             "dependencies": [],
             "details": "Document haversine-based great-circle calculations, 30-minute waypoint cadence, and local-flight fallback patterns; outline module exports shared by router/Lambda consumers.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": null,
             "parentId": "undefined"
           },
@@ -381,7 +381,7 @@
               1
             ],
             "details": "Create structured lookup for visibility, ceiling, winds, prohibited conditions; implement `evaluateWaypoint` and aggregators returning violation reasons per waypoint and route.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": null,
             "parentId": "undefined"
           },
@@ -394,7 +394,7 @@
               2
             ],
             "details": "Implement env-driven client factory, request deduplication, cache persistence with expirations, and graceful degradation when rate limits or cache misses occur.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": null,
             "parentId": "undefined"
           },
@@ -408,7 +408,7 @@
               3
             ],
             "details": "Add manual-check mutation, batching waypoint evaluations, surfacing violation reasons, and build dashboard widget/button to trigger refreshes and display status.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": null,
             "parentId": "undefined"
           },
@@ -423,7 +423,7 @@
               4
             ],
             "details": "Add Vitest suites mocking OpenWeatherMap + Redis, verifying route generation accuracy, per-training evaluation correctness, rate-limit fallbacks, and tRPC endpoint contracts.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Vitest unit + integration suites with mocked weather/caching layers",
             "parentId": "undefined"
           }
@@ -860,9 +860,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-08T00:10:00.000Z",
+      "lastModified": "2025-11-08T02:32:00.000Z",
       "taskCount": 10,
-      "completedCount": 4,
+      "completedCount": 5,
       "tags": [
         "master"
       ]
