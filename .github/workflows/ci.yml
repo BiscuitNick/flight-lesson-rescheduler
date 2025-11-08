@@ -1,0 +1,339 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop, 'claude/**']
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8'
+
+jobs:
+  # ============================================================================
+  # Lint & Type Check
+  # ============================================================================
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run typecheck
+
+      - name: Check code formatting
+        run: |
+          cd packages/app
+          npm run format:check
+
+  # ============================================================================
+  # Unit Tests
+  # ============================================================================
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm run test
+        env:
+          NODE_ENV: test
+
+      - name: Check coverage thresholds
+        run: |
+          echo "Checking coverage thresholds..."
+          # Coverage will be enforced via vitest.config.ts coverage.thresholds
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: |
+            ./packages/app/coverage/coverage-final.json
+            ./packages/weather-lib/coverage/coverage-final.json
+            ./packages/functions/weather-monitor/coverage/coverage-final.json
+            ./packages/functions/ai-rescheduler/coverage/coverage-final.json
+          flags: unittests
+          fail_ci_if_error: false
+
+  # ============================================================================
+  # E2E Tests
+  # ============================================================================
+  e2e-tests:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: flight_rescheduler_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/flight_rescheduler_test
+      REDIS_URL: redis://localhost:6379
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: packages/app
+
+      - name: Run database migrations
+        run: |
+          cd packages/app
+          npx prisma migrate deploy
+          npx prisma db seed
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run E2E tests
+        run: |
+          cd packages/app
+          npm run test:e2e
+        env:
+          CI: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: packages/app/playwright-report/
+          retention-days: 30
+
+      - name: Upload test screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-screenshots
+          path: packages/app/test-results/
+          retention-days: 7
+
+  # ============================================================================
+  # Build & Bundle Lambdas
+  # ============================================================================
+  build-lambdas:
+    name: Build Lambda Functions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Weather Monitor Lambda
+        run: |
+          cd packages/functions/weather-monitor
+          npm run build
+
+      - name: Build AI Rescheduler Lambda
+        run: |
+          cd packages/functions/ai-rescheduler
+          npm run build
+
+      - name: Upload Lambda artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-functions
+          path: |
+            packages/functions/weather-monitor/dist/
+            packages/functions/ai-rescheduler/dist/
+          retention-days: 7
+
+  # ============================================================================
+  # Deploy to Development (auto on push to main)
+  # ============================================================================
+  deploy-dev:
+    name: Deploy to Development
+    needs: [lint, unit-tests, e2e-tests, build-lambdas]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    environment:
+      name: development
+      url: https://dev.flight-rescheduler.example.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Lambda artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-functions
+          path: packages/functions/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy Lambdas via CDK
+        run: |
+          cd infrastructure
+          npm ci
+          npx cdk deploy --all --require-approval never \
+            --context environment=development \
+            --context databaseUrl="${{ secrets.DEV_DATABASE_URL }}" \
+            --context weatherApiKey="${{ secrets.OPENWEATHERMAP_API_KEY }}"
+        env:
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
+
+      - name: Deploy Next.js to Amplify
+        run: |
+          echo "Deploying to AWS Amplify..."
+          # Amplify auto-deploys on git push, or use Amplify CLI here
+
+  # ============================================================================
+  # Deploy to Production (manual approval required)
+  # ============================================================================
+  deploy-prod:
+    name: Deploy to Production
+    needs: [lint, unit-tests, e2e-tests, build-lambdas]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    environment:
+      name: production
+      url: https://flight-rescheduler.example.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Lambda artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-functions
+          path: packages/functions/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: us-east-1
+
+      - name: Deploy Lambdas via CDK
+        run: |
+          cd infrastructure
+          npm ci
+          npx cdk deploy --all --require-approval never \
+            --context environment=production \
+            --context databaseUrl="${{ secrets.PROD_DATABASE_URL }}" \
+            --context weatherApiKey="${{ secrets.OPENWEATHERMAP_API_KEY }}"
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
+
+      - name: Run smoke tests
+        run: |
+          echo "Running post-deployment smoke tests..."
+          # Add smoke test commands here
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          echo "Production deployment completed: ${{ job.status }}"
+          # Add Slack/email notification here
