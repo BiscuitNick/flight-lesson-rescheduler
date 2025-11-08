@@ -196,7 +196,7 @@
           "1",
           "2"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -204,7 +204,7 @@
             "description": "Set up Amplify Auth configuration using NEXT_PUBLIC_AMPLIFY_* environment variables and ensure hosted UI pages exist under app/(auth).",
             "dependencies": [],
             "details": "Add required env vars, initialize Amplify in the client entry (e.g., Amplify.configure + AmplifyProvider) and verify hosted UI login/logout routes render properly.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Smoke-test AmplifyProvider boot in dev and verify env loading via unit config test.",
             "parentId": "undefined"
           },
@@ -216,7 +216,7 @@
               1
             ],
             "details": "Use Amplify Auth helpers to parse JWT in middleware, handle redirects for unauthenticated users, and serialize claims for downstream access while preserving SSR compatibility.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add Vitest + supertest middleware tests covering valid token, expired token, and missing auth cases.",
             "parentId": "undefined"
           },
@@ -228,7 +228,7 @@
               2
             ],
             "details": "Inject middleware-provided claims into tRPC context, define helper functions for RBAC checks, and update base procedures to enforce auth assumptions.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test context creation with mocked headers and ensure guard functions throw for unauthorized roles.",
             "parentId": "undefined"
           },
@@ -240,7 +240,7 @@
               3
             ],
             "details": "Refactor router procedures and server components to call requireRole/role guards, ensuring students/instructors/admins only access allowed data; add fallback UI handling.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Router-level integration tests verifying role-limited queries/mutations plus manual dashboard checks for access control.",
             "parentId": "undefined"
           },
@@ -252,7 +252,7 @@
               4
             ],
             "details": "Update README/ops docs with Amplify env guidance, expand Vitest/Playwright coverage for login redirects and role blocking, and ensure CI includes new suites.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Combine unit/integration tests mentioned plus Playwright scenario ensuring role-specific redirects and unauthorized states behave.",
             "parentId": "undefined"
           }
@@ -862,7 +862,7 @@
       "version": "1.0.0",
       "lastModified": "2025-11-08T00:10:00.000Z",
       "taskCount": 10,
-      "completedCount": 2,
+      "completedCount": 3,
       "tags": [
         "master"
       ]
