@@ -5,6 +5,7 @@ import { trpc } from '@/lib/trpc/client';
 import { signOut } from '@/lib/auth/actions';
 import { useRouter } from 'next/navigation';
 import { UpcomingBookings } from '@/components/bookings';
+import { PendingSuggestionsWidget } from '@/components/reschedule';
 
 export default function StudentDashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -65,14 +66,20 @@ export default function StudentDashboard() {
       </div>
 
       {/* Dashboard content */}
-      <div className="grid gap-4">
-        <UpcomingBookings />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="space-y-4">
+          <UpcomingBookings />
+        </div>
 
-        <div className="rounded-lg border bg-white p-4">
-          <h2 className="mb-2 text-lg font-semibold">Weather Alerts</h2>
-          <p className="text-sm text-gray-600">
-            Weather notifications to be implemented with SSE (Task 9)
-          </p>
+        <div className="space-y-4">
+          <PendingSuggestionsWidget />
+
+          <div className="rounded-lg border bg-white p-4">
+            <h2 className="mb-2 text-lg font-semibold">Weather Alerts</h2>
+            <p className="text-sm text-gray-600">
+              Weather notifications to be implemented with SSE (Task 9)
+            </p>
+          </div>
         </div>
       </div>
     </div>
