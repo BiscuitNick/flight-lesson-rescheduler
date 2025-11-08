@@ -13,7 +13,7 @@ import {
 
 // Mock Prisma client
 vi.mock('../../db/prisma', () => ({
-  getPrismaClient: vi.fn(() => ({
+  prisma: {
     notification: {
       create: vi.fn(),
       createMany: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock('../../db/prisma', () => ({
         updateMany: vi.fn(),
       },
     })),
-  })),
+  },
 }));
 
 describe('Notifications Service', () => {

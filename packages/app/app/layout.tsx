@@ -4,6 +4,7 @@ import './globals.css';
 import { QueryProvider } from '@/lib/providers/query-provider';
 import { AuthProvider } from '@/lib/providers/auth-provider';
 import { ToastProvider } from '@/lib/providers/toast-provider';
+import { DevAccountSwitcher } from '@/components/dev/account-switcher';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -34,6 +35,7 @@ export default function RootLayout({
           <QueryProvider>
             {children}
             <ToastProvider />
+            <DevAccountSwitcher />
           </QueryProvider>
         </AuthProvider>
       </body>

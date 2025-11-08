@@ -65,11 +65,12 @@ async function main() {
   // ============================================================================
   console.log('👥 Seeding users...');
 
-  // Admin
+  // Admin (UUID: 00000000-0000-0000-0000-000000000003)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@flightschool.com' },
     update: {},
     create: {
+      id: '00000000-0000-0000-0000-000000000003',
       email: 'admin@flightschool.com',
       name: 'Admin User',
       role: 'ADMIN',
@@ -82,6 +83,7 @@ async function main() {
     where: { email: 'john.instructor@flightschool.com' },
     update: {},
     create: {
+      id: '00000000-0000-0000-0000-000000000001',
       email: 'john.instructor@flightschool.com',
       name: 'John Smith',
       role: 'INSTRUCTOR',
@@ -103,6 +105,7 @@ async function main() {
     where: { email: 'sarah.instructor@flightschool.com' },
     update: {},
     create: {
+      id: '00000000-0000-0000-0000-000000000004',
       email: 'sarah.instructor@flightschool.com',
       name: 'Sarah Johnson',
       role: 'INSTRUCTOR',
@@ -125,6 +128,7 @@ async function main() {
     where: { email: 'alice.student@example.com' },
     update: {},
     create: {
+      id: '00000000-0000-0000-0000-000000000002',
       email: 'alice.student@example.com',
       name: 'Alice Brown',
       role: 'STUDENT',
@@ -136,6 +140,7 @@ async function main() {
     where: { email: 'bob.student@example.com' },
     update: {},
     create: {
+      id: '00000000-0000-0000-0000-000000000005',
       email: 'bob.student@example.com',
       name: 'Bob Wilson',
       role: 'STUDENT',
@@ -147,6 +152,7 @@ async function main() {
     where: { email: 'carol.student@example.com' },
     update: {},
     create: {
+      id: '00000000-0000-0000-0000-000000000006',
       email: 'carol.student@example.com',
       name: 'Carol Davis',
       role: 'STUDENT',

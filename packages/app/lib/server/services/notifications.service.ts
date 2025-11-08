@@ -3,10 +3,8 @@
  * Business logic for managing notifications, SNS event handling, and SES email delivery
  */
 
-import { getPrismaClient } from '../db/prisma';
+import { prisma } from '../db/prisma';
 import type { NotificationType, NotificationChannel, Prisma } from '@prisma/client';
-
-const prisma = getPrismaClient();
 
 export interface CreateNotificationInput {
   userId: string;
