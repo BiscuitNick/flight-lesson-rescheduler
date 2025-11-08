@@ -442,7 +442,7 @@
         "dependencies": [
           "5"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -450,7 +450,7 @@
             "description": "Initialize Node 20 Lambda workspace with bundler and shared code wiring.",
             "dependencies": [],
             "details": "Scaffold Lambda package using esbuild (or equivalent), configure package.json/scripts, wire workspace dependency on shared weather module from task 5, ensure env/config placeholders for Prisma, OWM, SQS, and include basic handler stub ready for logic.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": null,
             "parentId": "undefined"
           },
@@ -462,7 +462,7 @@
               1
             ],
             "details": "Within handler, query bookings within 48h via Prisma, compute waypoints, call shared weather checker, update bookings to WEATHER_HOLD and persist WeatherCheck records, structure result payload for conflicts including violations summary for downstream processing.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Vitest unit tests mocking Prisma + weather module to cover safe vs unsafe branches",
             "parentId": "undefined"
           },
@@ -474,7 +474,7 @@
               2
             ],
             "details": "Integrate AWS SDK client, send JSON payloads to RESCHEDULE_QUEUE_URL, configure message attributes, ensure idempotency keys, add DLQ queue definitions plus retry policy/backoff via IaC templates, document env vars required.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Mocked SQS client tests verifying payload shape, DLQ wiring validated via IaC unit tests",
             "parentId": "undefined"
           },
@@ -486,7 +486,7 @@
               3
             ],
             "details": "Define EventBridge rule cron(0 * * * ? *), target Lambda with necessary input, attach IAM policies for RDS/Prisma, SQS, CloudWatch, configure Pino logger + structured metrics/alarms (failures>3/5min), update deployment scripts to include resources and parameters.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "IaC validation tests (e.g., cdk synth/assert) plus unit checks ensuring logging hooks emit expected fields",
             "parentId": "undefined"
           },
@@ -498,7 +498,7 @@
               4
             ],
             "details": "Expand tests to cover handler logic with mocked services, add integration test invoking Lambda against LocalStack (EventBridge/SQS) with seeded bookings, include scripts to spin LocalStack locally, document setup steps in README and ensure CI pipeline runs suites.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Vitest for unit coverage; integration test invoking Lambda via LocalStack verifying booking updates and SQS messages",
             "parentId": "undefined"
           }
@@ -860,9 +860,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-08T02:32:00.000Z",
+      "lastModified": "2025-11-08T12:00:00.000Z",
       "taskCount": 10,
-      "completedCount": 5,
+      "completedCount": 6,
       "tags": [
         "master"
       ]
