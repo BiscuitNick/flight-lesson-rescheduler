@@ -1,0 +1,246 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum TrainingLevel {
+  STUDENT_PILOT
+  PRIVATE_PILOT
+  INSTRUMENT_RATED
+}
+
+enum BookingStatus {
+  SCHEDULED
+  WEATHER_HOLD
+  AWAITING_RESPONSE
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum WeatherStatus {
+  SAFE
+  MARGINAL
+  UNSAFE
+}
+
+enum NotificationType {
+  WEATHER_ALERT
+  RESCHEDULE_SUGGESTION
+  CONFIRMATION
+  REMINDER
+  SYSTEM_MESSAGE
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+// ============================================================================
+// MODELS
+// ============================================================================
+
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  email         String         @unique @db.Citext
+  name          String
+  role          UserRole
+  trainingLevel TrainingLevel? // Only applicable for students
+
+  // Instructor availability patterns (JSON structure with weekly schedule + exceptions)
+  // Format: { weeklySchedule: { MON: [{start: "09:00", end: "17:00"}], ... }, exceptions: [...] }
+  availability  Json?
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  bookingsAsStudent     Booking[]      @relation("StudentBookings")
+  bookingsAsInstructor  Booking[]      @relation("InstructorBookings")
+  notifications         Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Booking {
+  id                String        @id @default(uuid()) @db.Uuid
+
+  // Student and Instructor references
+  studentId         String        @db.Uuid
+  instructorId      String        @db.Uuid
+
+  // Flight details
+  departureLocation String        // Airport code (e.g., "KJFK") or coordinates
+  arrivalLocation   String        // Airport code or coordinates
+  scheduledStart    DateTime
+  scheduledEnd      DateTime
+  duration          Int           // Duration in minutes
+  flightType        String        // e.g., "LOCAL", "CROSS_COUNTRY", "PATTERN_WORK"
+
+  // Status tracking
+  status            BookingStatus @default(SCHEDULED)
+
+  // Metadata
+  notes             String?       @db.Text
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  student           User          @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
+  instructor        User          @relation("InstructorBookings", fields: [instructorId], references: [id], onDelete: Cascade)
+  weatherChecks     WeatherCheck[]
+  rescheduleLogs    RescheduleLog[]
+
+  @@index([studentId])
+  @@index([instructorId])
+  @@index([status])
+  @@index([scheduledStart])
+  @@map("bookings")
+}
+
+model WeatherCheck {
+  id               String        @id @default(uuid()) @db.Uuid
+  bookingId        String        @db.Uuid
+
+  // Weather check details
+  timestamp        DateTime      @default(now())
+
+  // Waypoint-by-waypoint weather observations
+  // Format: [{ lat, lon, time, visibility, ceiling, windSpeed, windGust, conditions: [], safe: boolean, violations: [] }, ...]
+  waypointData     Json
+
+  // Overall assessment
+  overallStatus    WeatherStatus
+
+  // Violation summary (array of reasons)
+  // Format: ["VISIBILITY_BELOW_MINIMUM", "CEILING_TOO_LOW", "THUNDERSTORM_PRESENT", ...]
+  violationReasons String[]
+
+  createdAt        DateTime      @default(now())
+
+  // Relations
+  booking          Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([timestamp])
+  @@index([overallStatus])
+  @@map("weather_checks")
+}
+
+model RescheduleLog {
+  id                String   @id @default(uuid()) @db.Uuid
+  bookingId         String   @db.Uuid
+
+  // AI suggestion details
+  proposedDateTime  DateTime // The suggested new date/time
+  reasoning         String   @db.Text // AI-generated explanation
+  confidence        Float    // 0.0 to 1.0
+
+  // Selection tracking
+  isSelected        Boolean  @default(false)
+  selectedAt        DateTime?
+
+  // Metadata (AI model version, processing time, weather data snapshot, etc.)
+  // Format: { model: "gpt-4", processingTimeMs: 1234, weatherSnapshot: {...}, ... }
+  metadata          Json?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  booking           Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([isSelected])
+  @@index([proposedDateTime])
+  @@map("reschedule_logs")
+}
+
+model Notification {
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @db.Uuid
+
+  // Notification content
+  type        NotificationType
+  channel     NotificationChannel
+  title       String
+  message     String              @db.Text
+
+  // Status tracking
+  isRead      Boolean             @default(false)
+  deliveredAt DateTime?
+
+  // Additional context (booking ID, reschedule log ID, etc.)
+  // Format: { bookingId: "...", rescheduleLogId: "...", ... }
+  metadata    Json?
+
+  createdAt   DateTime            @default(now())
+
+  // Relations
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ============================================================================
+// WEATHER MINIMUMS LOOKUP
+// ============================================================================
+// This model stores the weather minimum requirements for each training level
+// Referenced by the weather evaluation logic
+
+model WeatherMinimum {
+  id            String        @id @default(uuid()) @db.Uuid
+  trainingLevel TrainingLevel @unique
+
+  // Visibility in statute miles
+  visibilityMiles Float
+
+  // Ceiling in feet AGL
+  ceilingFeet   Int
+
+  // Wind speed in knots
+  windSpeedKnots Int
+
+  // Wind gust in knots
+  windGustKnots  Int
+
+  // Prohibited weather conditions (array of condition codes)
+  // Format: ["THUNDERSTORM", "FREEZING", "ICE", "SNOW", "FOG", ...]
+  prohibitedConditions String[]
+
+  // Metadata
+  description   String?       @db.Text
+  effectiveDate DateTime      @default(now())
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([trainingLevel])
+  @@map("weather_minimums")
+}
