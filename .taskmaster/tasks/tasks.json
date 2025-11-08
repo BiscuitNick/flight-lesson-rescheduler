@@ -272,7 +272,7 @@
           "2",
           "3"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -280,7 +280,7 @@
             "description": "Review existing booking and instructor data models plus required fields for availability JSONB.",
             "dependencies": [],
             "details": "Inspect Prisma schema, confirm relationships, identify new enums/statuses/weather metadata needed before coding services.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Schema linting or migration dry-run to confirm model validity.",
             "parentId": "undefined"
           },
@@ -292,7 +292,7 @@
               1
             ],
             "details": "Add typed helpers with RBAC-aware filters, include JSONB availability serialization, ensure transactional safety for updates.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Vitest unit tests mocking Prisma client for each helper path.",
             "parentId": "undefined"
           },
@@ -304,7 +304,7 @@
               2
             ],
             "details": "Define zod input/output schemas, wire to service helpers, enforce student/instructor/admin visibility, support optimistic mutation responses.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Router unit tests validating RBAC behavior and schema validation errors.",
             "parentId": "undefined"
           },
@@ -316,7 +316,7 @@
               2
             ],
             "details": "Provide formatters/parsers for calendar UI, convert service data to calendar-friendly structures, handle weekly repeats plus exceptions.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit tests verifying calendar conversion accuracy and exception handling.",
             "parentId": "undefined"
           },
@@ -329,7 +329,7 @@
               4
             ],
             "details": "Wire front-end components to tRPC hooks with optimistic updates, include status badges, weather history, and availability editing flows.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Component tests or Storybook interactions validating optimistic updates and editor UX.",
             "parentId": "undefined"
           },
@@ -341,7 +341,7 @@
               5
             ],
             "details": "Cover schema/service units, router integration, and dashboard flows for create/edit/cancel per role plus optimistic mutation checks.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Vitest for units/integration, Playwright for full dashboard scenarios across roles.",
             "parentId": "undefined"
           }
@@ -862,7 +862,7 @@
       "version": "1.0.0",
       "lastModified": "2025-11-08T00:10:00.000Z",
       "taskCount": 10,
-      "completedCount": 3,
+      "completedCount": 4,
       "tags": [
         "master"
       ]
