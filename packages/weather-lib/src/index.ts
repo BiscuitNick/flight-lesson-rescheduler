@@ -5,3 +5,4 @@ export * from './types';
 export * from './waypoints';
 export * from './minimums';
 export * from './evaluation';
+export * from './weather-client';
