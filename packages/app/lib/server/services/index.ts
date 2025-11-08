@@ -6,3 +6,4 @@
 export * from './bookings.service';
 export * from './instructors.service';
 export * from './reschedule.service';
+export * from './notifications.service';

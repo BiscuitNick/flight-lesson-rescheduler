@@ -179,7 +179,7 @@ async function processRecord(
     // For now, we'll still update status but with no suggestions
   }
 
-  // 6. Persist reschedule logs in a transaction
+  // 6. Persist reschedule logs and create notifications in a transaction
   await prisma.$transaction(async (tx: typeof prisma) => {
     // Create reschedule log entries
     await tx.rescheduleLog.createMany({
@@ -203,9 +203,43 @@ async function processRecord(
       where: { id: booking.id },
       data: { status: 'AWAITING_RESPONSE' },
     });
+
+    // Create notifications for both student and instructor
+    await tx.notification.createMany({
+      data: [
+        {
+          userId: booking.studentId,
+          type: 'RESCHEDULE_SUGGESTION',
+          channel: 'IN_APP',
+          title: 'Reschedule Suggestions Available',
+          message: `We've generated ${validatedOptions.length} alternative time slots for your flight lesson. Please review and select your preferred option.`,
+          metadata: {
+            bookingId: booking.id,
+            eventType: 'RESCHEDULE_SUGGESTIONS',
+            suggestionsCount: validatedOptions.length,
+            originalDateTime: booking.scheduledStart.toISOString(),
+          },
+          deliveredAt: new Date(),
+        },
+        {
+          userId: booking.instructorId,
+          type: 'RESCHEDULE_SUGGESTION',
+          channel: 'IN_APP',
+          title: 'Reschedule Suggestions Sent',
+          message: `${validatedOptions.length} reschedule suggestions have been sent to ${booking.student.name} for the lesson originally scheduled on ${booking.scheduledStart.toLocaleString()}.`,
+          metadata: {
+            bookingId: booking.id,
+            eventType: 'RESCHEDULE_SUGGESTIONS',
+            studentName: booking.student.name,
+            suggestionsCount: validatedOptions.length,
+          },
+          deliveredAt: new Date(),
+        },
+      ],
+    });
   });
 
-  console.log(`Persisted ${validatedOptions.length} suggestions for booking ${booking.id}`);
+  console.log(`Persisted ${validatedOptions.length} suggestions and notifications for booking ${booking.id}`);
 
   // 7. Publish notification to SNS
   if (SNS_TOPIC_ARN) {
