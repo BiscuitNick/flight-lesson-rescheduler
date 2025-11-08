@@ -159,10 +159,46 @@ export async function handler(event: EventBridgeEvent<string, unknown>) {
         if (!routeEvaluation.safe) {
           console.log(`Booking ${booking.id} has weather conflicts, updating status`);
 
-          // Update booking status to WEATHER_HOLD
-          await prisma.booking.update({
-            where: { id: booking.id },
-            data: { status: 'WEATHER_HOLD' },
+          // Update booking status to WEATHER_HOLD and create notifications
+          await prisma.$transaction(async (tx) => {
+            // Update booking status
+            await tx.booking.update({
+              where: { id: booking.id },
+              data: { status: 'WEATHER_HOLD' },
+            });
+
+            // Create notifications for both student and instructor
+            await tx.notification.createMany({
+              data: [
+                {
+                  userId: booking.studentId,
+                  type: 'WEATHER_ALERT',
+                  channel: 'IN_APP',
+                  title: 'Weather Hold - Lesson Rescheduling Required',
+                  message: `Your flight lesson scheduled for ${booking.scheduledStart.toLocaleString()} has been placed on weather hold due to unsafe conditions. You will receive reschedule suggestions shortly.`,
+                  metadata: {
+                    bookingId: booking.id,
+                    eventType: 'WEATHER_ALERT',
+                    violations: routeEvaluation.violationSummary,
+                  },
+                  deliveredAt: new Date(),
+                },
+                {
+                  userId: booking.instructorId,
+                  type: 'WEATHER_ALERT',
+                  channel: 'IN_APP',
+                  title: 'Weather Hold - Student Lesson Affected',
+                  message: `The flight lesson with ${booking.student.name} scheduled for ${booking.scheduledStart.toLocaleString()} has been placed on weather hold.`,
+                  metadata: {
+                    bookingId: booking.id,
+                    eventType: 'WEATHER_ALERT',
+                    studentName: booking.student.name,
+                    violations: routeEvaluation.violationSummary,
+                  },
+                  deliveredAt: new Date(),
+                },
+              ],
+            });
           });
 
           // Prepare conflict payload for SQS
